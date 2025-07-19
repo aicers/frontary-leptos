@@ -1,0 +1,14 @@
+[package]
+name = "frontary-leptos"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+members = [
+    "demo/csr",    # CSR
+    "demo/server", # server
+]
+
+[dependencies]
+leptos = "0.8"
