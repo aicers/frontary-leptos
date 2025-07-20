@@ -12,3 +12,6 @@ members = [
 
 [dependencies]
 leptos = "0.8"
+
+[lints.clippy]
+pedantic = "warn"
