@@ -11,7 +11,7 @@ members = [
 ]
 
 [dependencies]
-leptos = "0.8"
+leptos = { version = "0.8", default-features = false, features = ["hydrate"] }
 
 [lints.clippy]
 pedantic = "warn"
