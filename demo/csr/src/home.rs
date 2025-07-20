@@ -1,4 +1,4 @@
-use frontary_leptos::Button;
+use frontary_leptos::sample::Button;
 use leptos::{IntoView, component, prelude::ElementChild, view};
 
 #[component]
