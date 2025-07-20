@@ -1,0 +1,13 @@
+{
+    "colors": {
+        "primary": "#4f46e5",
+        "accent": "#ec4899"
+    },
+    "fontFamily": {
+        "sans": ["Inter", "sans-serif"]
+    },
+    "borderRadius": {
+        "lg": "0.5rem",
+        "xl": "1rem"
+    }
+}
