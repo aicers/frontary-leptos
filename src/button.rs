@@ -1,3 +1,5 @@
+#[allow(unused_imports)]
+use leptos::prelude::IntoMaybeErased;
 use leptos::{IntoView, attr::global::ClassAttribute, component, prelude::ElementChild, view};
 
 // According to https://github.com/leptos-rs/leptos/issues/3172,
