@@ -1,4 +1,2 @@
-pub mod button;
+pub mod sample;
 pub mod static_files;
-
-pub use button::Button;
