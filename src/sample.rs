@@ -2,7 +2,7 @@ use leptos::{
     IntoView,
     attr::global::{ClassAttribute, OnAttribute},
     component,
-    prelude::{ElementChild, Get, Set, signal},
+    prelude::{ElementChild, Get, GetUntracked, Set, signal},
     view,
 };
 
@@ -21,7 +21,7 @@ pub fn Button<'a>(label: &'a str) -> impl IntoView {
 
             // Method 1: Use Tailwind utility classes directly
             <button class="bg-primary text-white font-sans px-4 py-2 rounded-xl"
-                on:click=move |_| {set_count.set(count.get() + 1);}
+                on:click=move |_| {set_count.set(count.get_untracked() + 1);}
             >
                 {label} " (utility)"
             </button>
