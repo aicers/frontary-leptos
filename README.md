@@ -77,9 +77,9 @@ styles. When updating or creating components, remember to update the following f
 to ensure your styles and theme tokens are included:
 
 ```text
-./static/input.frontary.css
-./static/tailwind.frontary.safelist.json
-./static/tailwind.frontary.theme.json
+static/input.frontary.css
+static/tailwind.frontary.safelist.json
+static/tailwind.frontary.theme.json
 ```
 
 ## Test
@@ -114,7 +114,7 @@ Use it like this:
 
 ### Demo Access
 
-Once you build with `./build-demo.sh`, the Axum server will serve the demo at:
+Once you build with `build-demo.sh`, the Axum server will serve the demo at:
 
 <!-- markdownlint-disable-next-line MD034 -->
 > 👉 http://127.0.0.1:8446/csr/
@@ -127,15 +127,15 @@ Each user of Frontary Leptos should generate their own Tailwind CSS, including t
 styles provided by Frontary Leptos. To support this, these files are distributed:
 
 ```text
-./static/input.frontary.css
-./static/tailwind.frontary.safelist.json
-./static/tailwind.frontary.theme.json
+static/input.frontary.css
+static/tailwind.frontary.safelist.json
+static/tailwind.frontary.theme.json
 ```
 
 Users can use `build.rs` to import and copy these files into their local project
 directory. To generate a custom Tailwind output, reference these files in your configuration
 (e.g., `input.css` and `tailwind.config.js`). You can find an example setup in
-the `./demo` directory.
+the `demo` directory.
 
 ## About Tailwind Theme & Configuration
 
@@ -187,5 +187,5 @@ When you build a component in `frontary-leptos`, always add example usage under
 - [ ] Added/modified Leptos component in `src/`
 - [ ] Created usage example in `demo/csr`
 - [ ] Verified styling and interaction visually
-- [ ] Ran `./build-demo.sh` successfully
+- [ ] Ran `build-demo.sh` successfully
 - [ ] Committed changes including `demo/csr/src`, but not `output.css` or `node_modules`
