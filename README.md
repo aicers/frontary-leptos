@@ -8,16 +8,23 @@ This repository contains:
 - A Leptos component library styled using Tailwind CSS and a custom theme defined
   in `frontary-leptos`
 - A demo environment to test components in **CSR (WebAssembly)** mode
-- Build tooling for contributors
+- A `build.rs` is provided, which automatically generates Tailwind CSS, WASM, and
+  the Axum binary **for demo purposes**.
 
 ## Repository Structure
 
 ```text
 .
-├── src/                # Leptos component library
+├── build-demo.sh                 # Script to build demo (CSR & server)
 ├── demo/
-│   ├── csr/            # Demo UI code for CSR WebAssembly
-│   └── server/         # Axum-based HTTP server
+│   ├── csr/                      # Demo UI code for CSR WebAssembly
+│   └── server/                   # Axum-based HTTP server
+├── src/                          # Leptos component library
+│   ├── lib.rs                    # Main library entry point (exports components)
+│   └── static_files.rs           # Bundles static assets for consumers
+└── static/
+    ├── input.frontary.css            # Tailwind input file
+    └── tailwind.frontary.theme.json  # Theme tokens for Tailwind
 ```
 
 ## Purpose
@@ -27,7 +34,7 @@ This project provides:
 - Tailwind-themed Leptos components based on a theme defined by `frontary-leptos`
 - A demo project to test and visualize your component changes interactively
 
-## Quickstart
+## Prerequisites
 
 ### 1. Install Node (if you haven't already)
 
@@ -50,88 +57,45 @@ cd demo/csr
 npm install -D tailwindcss@3 postcss autoprefixer
 ```
 
+> ⚠️ You must install these dependencies inside `demo/csr` because they are not
+  used globally. Install them locally in each directory where you generate Tailwind
+  CSS.
 > ⚠️ We use Tailwind CSS v3 because newer versions (e.g. v4) may cause compatibility
   issues.
 
-A `package.json` is already included. You **do not** need to run `npm init`.
+A `package.json` is already included, so you **do not** need to run `npm init`.
+(Running `npm init -y` to generate a `package.json` is the usual first step, but
+this has already been done for you.)
 
-### 3. Generate Tailwind CSS
+## Develop
+
+To add or modify Leptos components, work in the `src` directory and make sure to
+export them through `lib` so they are accessible to users. As this project uses
+Tailwind CSS exclusively, please avoid introducing other design systems or custom
+styles. When updating or creating components, remember to update both of the following
+files to ensure your styles and theme tokens are included:
+
+```text
+./input.frontary.css
+./tailwind.frontary.theme.json
+```
+
+## Test
+
+### Generate Tailwind CSS
 
 ```bash
 npx tailwindcss -i input.css -o static/output.css --config tailwind.config.js
 ```
 
-This compiles Tailwind CSS from the `frontary-leptos` theme and writes to `static/output.css`,
-which is referenced in `index.html`.
+This command compiles Tailwind CSS using the `frontary-leptos` theme and outputs
+it to `static/output.css`, which is referenced by `index.html`. You can run this
+manually, but `build-demo.sh` will handle it automatically. It's fine to skip this
+step and use `build-demo.sh` directly.
 
-### 4. Build the WASM and Server demo
+### Build the WASM and Server demo
 
-```bash
-./build-demo.sh
-```
-
-This will:
-
-- Generate `output.css`
-- Run `trunk build` for WASM and place final output into `dist/csr/`
-- Copy `output.css` to the final output directory
-- Build the Axum server
-
-You can also run selectively:
-
-```bash
-./build-demo.sh csr
-./build-demo.sh server
-```
-
-## Demo Access
-
-Once you build with `./build-demo.sh`, the Axum server will serve the demo at:
-
-<!-- markdownlint-disable-next-line MD034 -->
-> 👉 http://127.0.0.1:8446/csr/
-
-This is powered by `demo/server`, which wraps static assets from `dist/csr`.
-
-## Tailwind Theme & Configuration
-
-This project uses a theme-driven approach defined by `frontary-leptos`.
-
-### Shared Library Files (used by consumers and demo)
-
-<!-- markdownlint-disable MD013 -->
-| File | Purpose |
-|------|---------|
-| `tailwind.frontary.theme.json` | Theme tokens: `colors`, `fontFamily`, `borderRadius`, etc. |
-| `tailwind.frontary.safelist.json` | Required: class names to retain during purging |
-| `input.frontary.css` | Tailwind input with `@tailwind base/components/utilities` |
-<!-- markdownlint-enable MD013 -->
-
-These files are bundled in the Rust crate using `include_bytes!` and can be used
-by external projects to build their own Tailwind setup.
-
-### `demo/csr` Files
-
-<!-- markdownlint-disable MD013 -->
-| File | Role |
-|------|------|
-| `input.css` | Main input file for Tailwind build (must import `input.frontary.css`) |
-| `tailwind.config.js` | Tailwind config that loads the shared JSON theme |
-| `index.html` | References `static/output.css` like this: `<link rel="stylesheet" href="static/output.css" />` |
-<!-- markdownlint-enable MD013 -->
-
-### How to regenerate `output.css`
-
-```bash
-cd demo/csr
-npx tailwindcss -i input.css -o static/output.css --config tailwind.config.js
-```
-
-This output is used directly by the WASM app.
-
-## About `build-demo.sh`
-
-This script handles the full CSR + server build process. Key tasks include:
+`build-demo.sh` handles the full CSR + server build process. Key tasks include:
 
 - Generates `output.css` from `input.css`
 - Uses `trunk` to build WASM and place results into `dist/csr/`
@@ -145,6 +109,65 @@ Use it like this:
 ./build-demo.sh csr        # Build CSR only
 ./build-demo.sh server     # Build server only
 ```
+
+### Demo Access
+
+Once you build with `./build-demo.sh`, the Axum server will serve the demo at:
+
+<!-- markdownlint-disable-next-line MD034 -->
+> 👉 http://127.0.0.1:8446/csr/
+
+This is powered by `demo/server`, which wraps static assets from `dist/csr`.
+
+## About `static_files.rs`
+
+Each user of Frontary Leptos should generate their own Tailwind CSS, including the
+styles provided by Frontary Leptos. To support this, two files are distributed:
+
+```text
+static/tailwind.frontary.theme.json
+static/input.frontary.css
+```
+
+Users can use `build.rs` to import and copy both files into their local project
+directory. To generate a custom Tailwind output, reference both files in your configuration
+(e.g., `input.css` and `tailwind.config.js`). You can find an example setup in
+the `./demo` directory.
+
+## About Tailwind Theme & Configuration
+
+This project uses a theme-driven approach defined by `frontary-leptos`.
+
+### Shared Library Files (used by consumers and demo)
+
+<!-- markdownlint-disable MD013 -->
+| File | Purpose |
+|------|---------|
+| `tailwind.frontary.theme.json` | Theme tokens: `colors`, `fontFamily`, `borderRadius`, etc. |
+| `input.frontary.css` | Tailwind input with `@tailwind base/components/utilities` |
+<!-- markdownlint-enable MD013 -->
+
+Both files are bundled in the Rust crate using `include_bytes!` and can be used
+by external projects to build their own Tailwind setup.
+
+### `demo/csr` Files
+
+<!-- markdownlint-disable MD013 -->
+| File | Role |
+|------|------|
+| `input.css` | Main input file for Tailwind build (must import `input.frontary.css`) |
+| `tailwind.config.js` | Tailwind config that loads this Frontary JSON theme |
+| `index.html` | References `static/output.css` like this: `<link rel="stylesheet" href="static/output.css" />` |
+<!-- markdownlint-enable MD013 -->
+
+### How to regenerate `output.css`
+
+```bash
+cd demo/csr
+npx tailwindcss -i input.css -o static/output.css --config tailwind.config.js
+```
+
+This output is used directly by the WASM app.
 
 ## Want to Contribute?
 
