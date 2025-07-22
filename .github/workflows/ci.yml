@@ -1,0 +1,81 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Install leptosfmt
+        run: cargo install --locked leptosfmt
+
+      - name: Check formatting (cargo fmt)
+        run: cargo fmt -- --check --config group_imports=StdExternalCrate
+
+      - name: Check formatting (leptosfmt)
+        run: leptosfmt --check .
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+      - name: markdownlint
+        uses: articulate/actions-markdownlint@v1
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add wasm32-unknown-unknown target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install Trunk
+        run: cargo install --locked trunk
+
+      - name: Confirm Node.js and npm are available
+        run: |
+          node -v
+          npm -v
+
+      - name: Install TailwindCSS locally in demo/csr
+        run: |
+          cd demo/csr
+          npm install -D tailwindcss@3 postcss autoprefixer
+
+      - name: Make build-demo.sh executable
+        run: chmod +x build-demo.sh
+
+      - name: Run build script
+        run: ./build-demo.sh
+
+      - name: Check CSR output files
+        run: |
+          test -f dist/csr/index.html
+          ls dist/csr/*_bg.wasm
+          ls dist/csr/*.js
+          echo "CSR build artifacts found."
+
+      - name: Check server binary exists
+        run: |
+          ls target/debug/demo*
+          echo "Server binary found."
+
+      - name: Run tests
+        run: cargo test --workspace --all-features --verbose

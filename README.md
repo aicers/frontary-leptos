@@ -68,6 +68,33 @@ A `package.json` is already included, so you **do not** need to run `npm init`.
 (Running `npm init -y` to generate a `package.json` is the usual first step, but
 this has already been done for you.)
 
+### 3. Install `leptosfmt`
+
+```bash
+cargo install --locked leptosfmt
+```
+
+`leptosfmt` is a formatter for the Leptos `view!` macro.
+This repository already provides a `rust-analyzer.toml` file with the following
+configuration:
+
+```toml
+[rustfmt]
+overrideCommand = ["leptosfmt", "--stdin", "--rustfmt"]
+```
+
+You can use this as-is, or customize your own `rust-analyzer.toml` if needed.
+This setup ensures Leptos formatting works out of the box with `rust-analyzer`.
+
+To ensure `leptosfmt` formats your code using the correct Rust edition, add the
+following to your `rustfmt.toml`:
+
+```toml
+edition = "2024"
+```
+
+Use this exact setting, as the entire repository is written for Rust 2024 edition.
+
 ## Develop
 
 To add or modify Leptos components, work in the `src` directory and make sure to
