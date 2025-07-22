@@ -23,8 +23,9 @@ This repository contains:
 │   ├── lib.rs                    # Main library entry point (exports components)
 │   └── static_files.rs           # Bundles static assets for consumers
 └── static/
-    ├── input.frontary.css            # Tailwind input file
-    └── tailwind.frontary.theme.json  # Theme tokens for Tailwind
+    ├── input.frontary.css              # Tailwind input file
+    ├── tailwind.frontary.safelist.json # For classes that are dynamically referenced
+    └── tailwind.frontary.theme.json    # Theme tokens for Tailwind
 ```
 
 ## Purpose
