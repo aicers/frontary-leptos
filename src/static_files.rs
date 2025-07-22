@@ -11,5 +11,8 @@ pub fn static_files() -> Vec<(&'static str, &'static [u8])> {
     let file = include_bytes!("../static/input.frontary.css");
     rtn.push(("input.frontary.css", file));
 
+    let file = include_bytes!("../static/tailwind.frontary.safelist.json");
+    rtn.push(("tailwind.frontary.safelist.json", file));
+
     rtn
 }

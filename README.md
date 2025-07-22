@@ -72,12 +72,13 @@ this has already been done for you.)
 To add or modify Leptos components, work in the `src` directory and make sure to
 export them through `lib` so they are accessible to users. As this project uses
 Tailwind CSS exclusively, please avoid introducing other design systems or custom
-styles. When updating or creating components, remember to update both of the following
-files to ensure your styles and theme tokens are included:
+styles. When updating or creating components, remember to update the following files
+to ensure your styles and theme tokens are included:
 
 ```text
-./input.frontary.css
-./tailwind.frontary.theme.json
+./static/input.frontary.css
+./static/tailwind.frontary.safelist.json
+./static/tailwind.frontary.theme.json
 ```
 
 ## Test
@@ -122,15 +123,16 @@ This is powered by `demo/server`, which wraps static assets from `dist/csr`.
 ## About `static_files.rs`
 
 Each user of Frontary Leptos should generate their own Tailwind CSS, including the
-styles provided by Frontary Leptos. To support this, two files are distributed:
+styles provided by Frontary Leptos. To support this, these files are distributed:
 
 ```text
-static/tailwind.frontary.theme.json
-static/input.frontary.css
+./static/input.frontary.css
+./static/tailwind.frontary.safelist.json
+./static/tailwind.frontary.theme.json
 ```
 
-Users can use `build.rs` to import and copy both files into their local project
-directory. To generate a custom Tailwind output, reference both files in your configuration
+Users can use `build.rs` to import and copy these files into their local project
+directory. To generate a custom Tailwind output, reference these files in your configuration
 (e.g., `input.css` and `tailwind.config.js`). You can find an example setup in
 the `./demo` directory.
 
@@ -144,10 +146,11 @@ This project uses a theme-driven approach defined by `frontary-leptos`.
 | File | Purpose |
 |------|---------|
 | `tailwind.frontary.theme.json` | Theme tokens: `colors`, `fontFamily`, `borderRadius`, etc. |
+| `tailwind.frontary.safelist.json` | Contains style classes that are dynamically referenced and should not be purged by Tailwind. |
 | `input.frontary.css` | Tailwind input with `@tailwind base/components/utilities` |
 <!-- markdownlint-enable MD013 -->
 
-Both files are bundled in the Rust crate using `include_bytes!` and can be used
+These files are bundled in the Rust crate using `include_bytes!` and can be used
 by external projects to build their own Tailwind setup.
 
 ### `demo/csr` Files
