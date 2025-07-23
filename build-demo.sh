@@ -37,6 +37,19 @@ if $BUILD_CSR; then
   echo "🧹 Cleaning previous dist/csr output..."
   rm -rf dist/csr
 
+  # Install Tailwind CSS if not already installed
+  echo "📦 Checking Tailwind CSS installation in demo/csr/..."
+  (
+      cd demo/csr
+
+      if [ ! -d "node_modules" ] || [ ! -d "node_modules/tailwindcss" ]; then
+          echo "📦 Installing Tailwind CSS dependencies..."
+          npm install -D tailwindcss@3 postcss autoprefixer
+      else
+          echo "✅ Tailwind CSS already installed. Skipping npm install."
+      fi
+  )
+
   # Generate output.css from input.css
   echo "🎨 Generating Tailwind CSS..."
   (
