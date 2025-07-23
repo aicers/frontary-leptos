@@ -20,10 +20,18 @@ jobs:
         run: cargo install --locked leptosfmt
 
       - name: Check formatting (cargo fmt)
-        run: cargo fmt -- --check --config group_imports=StdExternalCrate
+        run: cargo fmt --all -- --check --config group_imports=StdExternalCrate
 
-      - name: Check formatting (leptosfmt)
-        run: leptosfmt --check .
+      - name: Check formatting (leptosfmt on all workspace members)
+        run: |
+          leptosfmt --check .
+          for member in $(cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[].manifest_path' \
+            | xargs -n1 dirname \
+            | sort -u); do
+            echo "🔍 Running leptosfmt in $member"
+            leptosfmt --check "$member"
+          done
 
       - name: Clippy
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
