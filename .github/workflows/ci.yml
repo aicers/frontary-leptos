@@ -62,7 +62,7 @@ jobs:
           node -v
           npm -v
 
-      - name: Install TailwindCSS locally in demo/csr
+      - name: Install Tailwind CSS tools locally in demo/csr
         run: |
           cd demo/csr
           npm install -D tailwindcss@3 postcss autoprefixer
@@ -76,13 +76,26 @@ jobs:
       - name: Check CSR output files
         run: |
           test -f dist/csr/index.html
-          ls dist/csr/*_bg.wasm
-          ls dist/csr/*.js
+          shopt -s nullglob
+          wasm_files=(dist/csr/demo-csr-*_bg.wasm)
+          if [ ${#wasm_files[@]} -ne 1 ]; then
+            echo "❌ Expected 1 demo-csr-*_bg.wasm file, found ${#wasm_files[@]}"
+            exit 1
+          else
+            echo "✅ Found wasm: ${wasm_files[0]}"
+          fi
+          js_files=(dist/csr/demo-csr-*.js)
+          if [ ${#js_files[@]} -ne 1 ]; then
+            echo "❌ Expected 1 demo-csr-*.js file, found ${#js_files[@]}"
+            exit 1
+          else
+            echo "✅ Found JS: ${js_files[0]}"
+          fi
           echo "CSR build artifacts found."
 
       - name: Check server binary exists
         run: |
-          ls target/debug/demo*
+          test -f target/debug/demo
           echo "Server binary found."
 
       - name: Run tests
