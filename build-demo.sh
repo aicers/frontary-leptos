@@ -39,36 +39,42 @@ if $BUILD_CSR; then
 
   # Install Tailwind CSS if not already installed
   echo "📦 Checking Tailwind CSS installation in demo/csr/..."
-  (
-      cd demo/csr
+  cd demo/csr
 
-      if [ ! -d "node_modules" ] || [ ! -d "node_modules/tailwindcss" ]; then
-          echo "📦 Installing Tailwind CSS dependencies..."
-          npm install -D tailwindcss@3 postcss autoprefixer
-      else
-          echo "✅ Tailwind CSS already installed. Skipping npm install."
-      fi
-  )
+  if [ ! -d "node_modules" ] || [ ! -d "node_modules/tailwindcss" ]; then
+      echo "📦 Installing Tailwind CSS dependencies..."
+      npm install -D tailwindcss@3 postcss autoprefixer || {
+          echo "❌ Failed to install Tailwind CSS"
+          exit 1
+      }
+  else
+      echo "✅ Tailwind CSS already installed. Skipping npm install."
+  fi
 
   # Generate output.css from input.css
   echo "🎨 Generating Tailwind CSS..."
-  (
-    cd demo/csr
-    npx tailwindcss -i input.css -o static/output.css --config tailwind.config.js
-  )
+  npx tailwindcss -i input.css -o static/output.css --config tailwind.config.js || {
+      echo "❌ Failed to generate output.css"
+      exit 1
+  }
 
   # Build the WASM bundle with trunk
   echo "🛠 Building with Trunk..."
-  mkdir -p dist/csr
-  (
-    cd demo/csr
-    trunk build --dist ../../dist/csr --public-url="/csr/"
+  mkdir -p ../../dist/csr
+  trunk build --dist ../../dist/csr --public-url="/csr/" || {
+      echo "❌ Trunk build failed"
+      exit 1
+  }
 
-    # Copy output.css to dist
-    echo "📦 Copying output.css to dist..."
-    mkdir -p ../../dist/csr/static
-    cp static/output.css ../../dist/csr/static/output.css
-  )
+  # Copy output.css to dist
+  echo "📦 Copying output.css to dist..."
+  mkdir -p ../../dist/csr/static
+  cp static/output.css ../../dist/csr/static/output.css || {
+      echo "❌ Failed to copy output.css"
+      exit 1
+  }
+
+  cd ../.. # return to project root
 fi
 
 # ────────────── Build Server only ──────────────
